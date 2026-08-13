@@ -1,0 +1,23 @@
+{
+  "name": "SequencialApolice",
+  "type": "object",
+  "properties": {
+    "filial_id": {
+      "type": "string",
+      "description": "ID da filial dona deste contador"
+    },
+    "ano": {
+      "type": "number",
+      "description": "Ano de compet\u00eancia do contador"
+    },
+    "ultimo_sequencial": {
+      "type": "number",
+      "default": 0,
+      "description": "\u00daltimo n\u00famero sequencial usado (NNNNNN). Atualizado exclusivamente pela server function gerarNumeroApolice."
+    }
+  },
+  "required": [
+    "filial_id",
+    "ano"
+  ]
+}

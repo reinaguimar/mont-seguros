@@ -1,0 +1,62 @@
+{
+  "name": "FechamentoAssinatura",
+  "type": "object",
+  "properties": {
+    "fechamento_id": {
+      "type": "string"
+    },
+    "tipo_assinatura": {
+      "type": "string",
+      "enum": [
+        "mga",
+        "seguradora"
+      ]
+    },
+    "usuario_id": {
+      "type": "string"
+    },
+    "usuario_nome": {
+      "type": "string"
+    },
+    "usuario_email": {
+      "type": "string"
+    },
+    "data_assinatura": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "hash_documento": {
+      "type": "string"
+    },
+    "hash_assinatura": {
+      "type": "string"
+    },
+    "certificado_cn": {
+      "type": "string"
+    },
+    "certificado_issuer": {
+      "type": "string"
+    },
+    "metodo_assinatura": {
+      "type": "string",
+      "enum": [
+        "sha256",
+        "sha512"
+      ],
+      "default": "sha256"
+    },
+    "ip_address": {
+      "type": "string"
+    },
+    "observacao": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "fechamento_id",
+    "tipo_assinatura",
+    "usuario_id",
+    "hash_documento",
+    "hash_assinatura"
+  ]
+}

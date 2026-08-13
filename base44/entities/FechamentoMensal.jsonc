@@ -1,0 +1,192 @@
+{
+  "name": "FechamentoMensal",
+  "type": "object",
+  "properties": {
+    "competencia_mes": {
+      "type": "number"
+    },
+    "competencia_ano": {
+      "type": "number"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "rascunho",
+        "auditado",
+        "aprovado_mga",
+        "aprovado_seguradora",
+        "fechado"
+      ],
+      "default": "rascunho"
+    },
+    "premio_emitido_bruto": {
+      "type": "number",
+      "default": 0
+    },
+    "iof_total_mes": {
+      "type": "number",
+      "default": 0
+    },
+    "inadimplencia": {
+      "type": "number",
+      "default": 0
+    },
+    "premio_arrecadado_liquido": {
+      "type": "number",
+      "default": 0
+    },
+    "sinistros_avisados": {
+      "type": "number",
+      "default": 0
+    },
+    "sinistros_pagos": {
+      "type": "number",
+      "default": 0
+    },
+    "remuneracao_minima_seguradora": {
+      "type": "number",
+      "default": 0
+    },
+    "remuneracao_sinistralidade_seguradora": {
+      "type": "number",
+      "default": 0
+    },
+    "remuneracao_aplicada_seguradora": {
+      "type": "number",
+      "default": 0
+    },
+    "comissao_fixa_mga": {
+      "type": "number",
+      "default": 0
+    },
+    "lucro_operacional": {
+      "type": "number",
+      "default": 0
+    },
+    "bonus_variavel_mga": {
+      "type": "number",
+      "default": 0
+    },
+    "remuneracao_total_mga": {
+      "type": "number",
+      "default": 0
+    },
+    "saldo_tecnico_liquido": {
+      "type": "number",
+      "default": 0
+    },
+    "repasse_seguradora": {
+      "type": "number",
+      "default": 0
+    },
+    "retencao_mga": {
+      "type": "number",
+      "default": 0
+    },
+    "percentual_comissao_mga": {
+      "type": "number",
+      "default": 10
+    },
+    "percentual_bonus_mga": {
+      "type": "number",
+      "default": 3.8
+    },
+    "cr_capital_aportado": {
+      "type": "number",
+      "default": 50000
+    },
+    "cr_necessidade_capital": {
+      "type": "number",
+      "default": 0
+    },
+    "cr_saldo_positivo": {
+      "type": "number",
+      "default": 0
+    },
+    "cr_necessidade_aporte": {
+      "type": "number",
+      "default": 0
+    },
+    "cr_atualizado": {
+      "type": "number",
+      "default": 0
+    },
+    "auditor_id": {
+      "type": "string"
+    },
+    "auditor_nome": {
+      "type": "string"
+    },
+    "observacoes_auditoria": {
+      "type": "string"
+    },
+    "data_auditoria": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "aprovacao_mga_user_id": {
+      "type": "string"
+    },
+    "aprovacao_mga_nome": {
+      "type": "string"
+    },
+    "aprovacao_mga_data": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "aprovacao_mga_hash": {
+      "type": "string"
+    },
+    "aprovacao_mga_observacao": {
+      "type": "string"
+    },
+    "aprovacao_seguradora_user_id": {
+      "type": "string"
+    },
+    "aprovacao_seguradora_nome": {
+      "type": "string"
+    },
+    "aprovacao_seguradora_data": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "aprovacao_seguradora_hash": {
+      "type": "string"
+    },
+    "aprovacao_seguradora_observacao": {
+      "type": "string"
+    },
+    "documento_pdf_url": {
+      "type": "string"
+    },
+    "detalhes_calculo": {
+      "type": "object"
+    }
+  },
+  "required": [
+    "competencia_mes",
+    "competencia_ano"
+  ],
+  "rls": {
+    "create": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "read": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "update": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}

@@ -1,0 +1,237 @@
+{
+  "name": "Apolice",
+  "type": "object",
+  "properties": {
+    "numero_apolice": {
+      "type": "string"
+    },
+    "filial_id": {
+      "type": "string"
+    },
+    "filial_codigo_susep": {
+      "type": "string"
+    },
+    "filial_nome": {
+      "type": "string"
+    },
+    "filial_codigo": {
+      "type": "string"
+    },
+    "natureza_movimento": {
+      "type": "string",
+      "default": "Emiss\u00e3o"
+    },
+    "tipo_movimento": {
+      "type": "string",
+      "default": "01 - Emiss\u00e3o"
+    },
+    "valor_corretagem": {
+      "type": "number",
+      "default": 0
+    },
+    "iof": {
+      "type": "number"
+    },
+    "data_inicio_apolice": {
+      "type": "string",
+      "format": "date"
+    },
+    "data_fim_apolice": {
+      "type": "string",
+      "format": "date"
+    },
+    "data_inicio_cobertura": {
+      "type": "string",
+      "format": "date"
+    },
+    "data_fim_cobertura": {
+      "type": "string",
+      "format": "date"
+    },
+    "id_segurado": {
+      "type": "string"
+    },
+    "id_beneficiario": {
+      "type": "string"
+    },
+    "seguro_intermitente": {
+      "type": "boolean",
+      "default": false
+    },
+    "data_movimento": {
+      "type": "string",
+      "format": "date"
+    },
+    "lmi_geral": {
+      "type": "number"
+    },
+    "premio_bruto_total": {
+      "type": "number"
+    },
+    "produtos": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "rcfv_lmi": {
+      "type": "number"
+    },
+    "id_objeto": {
+      "type": "string"
+    },
+    "renovada": {
+      "type": "boolean",
+      "default": false
+    },
+    "renovacao_de": {
+      "type": "string"
+    },
+    "id_apolice_renovacao": {
+      "type": "string"
+    },
+    "data_renovacao": {
+      "type": "string",
+      "format": "date"
+    },
+    "numero_renovacao": {
+      "type": "number",
+      "default": 0
+    },
+    "cobertura_1_id_cobertura": {
+      "type": "string"
+    },
+    "cobertura_1_ramo": {
+      "type": "number"
+    },
+    "cobertura_1_valor_maximo": {
+      "type": "number"
+    },
+    "cobertura_1_id_objeto": {
+      "type": "string"
+    },
+    "cobertura_1_premio_bruto": {
+      "type": "number"
+    },
+    "cobertura_1_premio_comercial": {
+      "type": "number"
+    },
+    "cobertura_1_premio_retido": {
+      "type": "number"
+    },
+    "cobertura_2_id_cobertura": {
+      "type": "string"
+    },
+    "cobertura_2_ramo": {
+      "type": "number"
+    },
+    "cobertura_2_valor_maximo": {
+      "type": "number"
+    },
+    "cobertura_2_id_objeto": {
+      "type": "string"
+    },
+    "cobertura_2_premio_bruto": {
+      "type": "number"
+    },
+    "cobertura_2_premio_comercial": {
+      "type": "number"
+    },
+    "cobertura_2_premio_retido": {
+      "type": "number"
+    },
+    "cobertura_3_id_cobertura": {
+      "type": "string"
+    },
+    "cobertura_3_ramo": {
+      "type": "number"
+    },
+    "cobertura_3_valor_maximo": {
+      "type": "number"
+    },
+    "cobertura_3_id_objeto": {
+      "type": "string"
+    },
+    "cobertura_3_premio_bruto": {
+      "type": "number"
+    },
+    "cobertura_3_premio_comercial": {
+      "type": "number"
+    },
+    "cobertura_3_premio_retido": {
+      "type": "number"
+    },
+    "cobertura_4_id_cobertura": {
+      "type": "string"
+    },
+    "cobertura_4_ramo": {
+      "type": "number"
+    },
+    "cobertura_4_valor_maximo": {
+      "type": "number"
+    },
+    "cobertura_4_id_objeto": {
+      "type": "string"
+    },
+    "cobertura_4_premio_bruto": {
+      "type": "number"
+    },
+    "cobertura_4_premio_comercial": {
+      "type": "number"
+    },
+    "cobertura_4_premio_retido": {
+      "type": "number"
+    },
+    "cobertura_5_id_cobertura": {
+      "type": "string"
+    },
+    "cobertura_5_ramo": {
+      "type": "number"
+    },
+    "cobertura_5_valor_maximo": {
+      "type": "number"
+    },
+    "cobertura_5_id_objeto": {
+      "type": "string"
+    },
+    "cobertura_5_premio_bruto": {
+      "type": "number"
+    },
+    "cobertura_5_premio_comercial": {
+      "type": "number"
+    },
+    "cobertura_5_premio_retido": {
+      "type": "number"
+    },
+    "cobertura_6_id_cobertura": {
+      "type": "string"
+    },
+    "cobertura_6_ramo": {
+      "type": "number"
+    },
+    "cobertura_6_valor_maximo": {
+      "type": "number"
+    },
+    "cobertura_6_id_objeto": {
+      "type": "string"
+    },
+    "cobertura_6_premio_bruto": {
+      "type": "number"
+    },
+    "cobertura_6_premio_comercial": {
+      "type": "number"
+    },
+    "cobertura_6_premio_retido": {
+      "type": "number"
+    }
+  },
+  "required": [
+    "numero_apolice",
+    "data_inicio_apolice",
+    "id_segurado",
+    "id_beneficiario",
+    "lmi_geral",
+    "premio_bruto_total",
+    "id_objeto"
+  ]
+}

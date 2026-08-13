@@ -1,0 +1,47 @@
+{
+  "name": "LogDelecao",
+  "type": "object",
+  "properties": {
+    "tipo_entidade": {
+      "type": "string",
+      "enum": [
+        "Apolice",
+        "Sinistro"
+      ]
+    },
+    "id_registro": {
+      "type": "string"
+    },
+    "id_registro_alternativo": {
+      "type": "string"
+    },
+    "usuario_id": {
+      "type": "string"
+    },
+    "usuario_email": {
+      "type": "string"
+    },
+    "usuario_nome": {
+      "type": "string"
+    },
+    "motivo_delecao": {
+      "type": "string"
+    },
+    "data_delecao": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "ip_address": {
+      "type": "string"
+    },
+    "dados_backup": {
+      "type": "object"
+    }
+  },
+  "required": [
+    "tipo_entidade",
+    "id_registro",
+    "usuario_id",
+    "motivo_delecao"
+  ]
+}

@@ -1,0 +1,73 @@
+{
+  "name": "Sinistro",
+  "type": "object",
+  "properties": {
+    "numero_sinistro": {
+      "type": "string"
+    },
+    "data_sinistro": {
+      "type": "string",
+      "format": "date"
+    },
+    "data_abertura": {
+      "type": "string",
+      "format": "date"
+    },
+    "cpf_segurado": {
+      "type": "string"
+    },
+    "id_apolice": {
+      "type": "string"
+    },
+    "numero_apolice": {
+      "type": "string"
+    },
+    "filial_id": {
+      "type": "string"
+    },
+    "filial_nome": {
+      "type": "string"
+    },
+    "produto_sinistrado": {
+      "type": "string",
+      "enum": [
+        "FR",
+        "COL_PARCIAL",
+        "COL_TOTAL",
+        "INCENDIO",
+        "RCFV"
+      ]
+    },
+    "valor_inicial": {
+      "type": "number"
+    },
+    "franquia": {
+      "type": "number",
+      "default": 0
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "aberto",
+        "em_analise",
+        "aprovado",
+        "em_reparo",
+        "concluido",
+        "negado"
+      ],
+      "default": "aberto"
+    },
+    "descricao": {
+      "type": "string"
+    },
+    "observacoes": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "data_sinistro",
+    "cpf_segurado",
+    "id_apolice",
+    "produto_sinistrado"
+  ]
+}

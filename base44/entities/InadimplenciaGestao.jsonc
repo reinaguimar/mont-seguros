@@ -1,0 +1,105 @@
+{
+  "name": "InadimplenciaGestao",
+  "type": "object",
+  "properties": {
+    "apolice_id": {
+      "type": "string"
+    },
+    "chave_grupo": {
+      "type": "string"
+    },
+    "numero_apolice": {
+      "type": "string"
+    },
+    "cpf_cnpj": {
+      "type": "string"
+    },
+    "placa": {
+      "type": "string"
+    },
+    "status_financeiro_atual": {
+      "type": "string",
+      "enum": [
+        "ativo",
+        "inadimplente",
+        "cancelado",
+        "pago"
+      ]
+    },
+    "status_atual": {
+      "type": "string",
+      "enum": [
+        "em_aberto",
+        "em_contato",
+        "negociacao",
+        "acordo_fechado",
+        "pago_confirmado",
+        "encerrado",
+        "cancelado_por_inadimplencia"
+      ],
+      "default": "em_aberto"
+    },
+    "bloqueado_recalculo": {
+      "type": "boolean",
+      "default": false
+    },
+    "data_bloqueio": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "data_inicio_inadimplencia": {
+      "type": "string",
+      "format": "date"
+    },
+    "dias_inadimplencia": {
+      "type": "number"
+    },
+    "responsavel": {
+      "type": "string"
+    },
+    "data_primeiro_contato": {
+      "type": "string",
+      "format": "date"
+    },
+    "data_ultimo_contato": {
+      "type": "string",
+      "format": "date"
+    },
+    "proxima_acao_em": {
+      "type": "string",
+      "format": "date"
+    },
+    "canal": {
+      "type": "string",
+      "enum": [
+        "whatsapp",
+        "telefone",
+        "email",
+        "outros"
+      ],
+      "default": "telefone"
+    },
+    "observacoes": {
+      "type": "string"
+    },
+    "valor_em_aberto": {
+      "type": "number"
+    },
+    "ultimo_lote_id": {
+      "type": "string"
+    },
+    "ultima_competencia": {
+      "type": "string"
+    },
+    "historico_lotes": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      }
+    }
+  },
+  "required": [
+    "apolice_id",
+    "status_atual"
+  ]
+}

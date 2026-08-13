@@ -1,0 +1,59 @@
+{
+  "name": "LogFechamento",
+  "type": "object",
+  "properties": {
+    "fechamento_id": {
+      "type": "string"
+    },
+    "acao": {
+      "type": "string",
+      "enum": [
+        "criado",
+        "calculado",
+        "auditado",
+        "enviado_mga",
+        "aprovado_mga",
+        "enviado_seguradora",
+        "aprovado_seguradora",
+        "fechado",
+        "reaberto",
+        "cancelado",
+        "assinado_mga",
+        "assinado_seguradora",
+        "alteracao_perfil"
+      ]
+    },
+    "usuario_id": {
+      "type": "string"
+    },
+    "usuario_nome": {
+      "type": "string"
+    },
+    "usuario_email": {
+      "type": "string"
+    },
+    "observacao": {
+      "type": "string"
+    },
+    "ip_address": {
+      "type": "string"
+    },
+    "dados_snapshot": {
+      "type": "object"
+    },
+    "assinatura_digital": {
+      "type": "string"
+    },
+    "certificado_info": {
+      "type": "object"
+    },
+    "versao_pdd": {
+      "type": "number"
+    }
+  },
+  "required": [
+    "fechamento_id",
+    "acao",
+    "usuario_id"
+  ]
+}

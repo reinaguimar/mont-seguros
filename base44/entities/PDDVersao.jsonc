@@ -1,0 +1,58 @@
+{
+  "name": "PDDVersao",
+  "type": "object",
+  "properties": {
+    "competencia": {
+      "type": "string"
+    },
+    "pdd_competencia_id": {
+      "type": "string"
+    },
+    "numero_versao": {
+      "type": "number"
+    },
+    "total_inadimplentes": {
+      "type": "number",
+      "default": 0
+    },
+    "pdd_estimado": {
+      "type": "number",
+      "default": 0
+    },
+    "criterio": {
+      "type": "string"
+    },
+    "breakdown_por_faixa": {
+      "type": "object"
+    },
+    "usuario_id": {
+      "type": "string"
+    },
+    "usuario_nome": {
+      "type": "string"
+    },
+    "data_calculo": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "motivo_recalculo": {
+      "type": "string"
+    },
+    "parametros_id": {
+      "type": "string"
+    },
+    "ativa": {
+      "type": "boolean",
+      "default": false
+    },
+    "data_ativacao": {
+      "type": "string",
+      "format": "date-time"
+    }
+  },
+  "required": [
+    "competencia",
+    "pdd_competencia_id",
+    "numero_versao"
+  ]
+}

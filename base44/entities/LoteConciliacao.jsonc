@@ -1,0 +1,78 @@
+{
+  "name": "LoteConciliacao",
+  "type": "object",
+  "properties": {
+    "competencia": {
+      "type": "string"
+    },
+    "data_processamento": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "processando",
+        "concluido",
+        "erro"
+      ],
+      "default": "processando"
+    },
+    "total_apolices_base": {
+      "type": "number"
+    },
+    "total_ativo": {
+      "type": "number",
+      "default": 0
+    },
+    "total_inadimplente": {
+      "type": "number",
+      "default": 0
+    },
+    "total_cancelado": {
+      "type": "number",
+      "default": 0
+    },
+    "total_pago": {
+      "type": "number",
+      "default": 0
+    },
+    "total_nao_classificado": {
+      "type": "number",
+      "default": 0
+    },
+    "registros_validos_ativos": {
+      "type": "number"
+    },
+    "registros_validos_inadimplentes": {
+      "type": "number"
+    },
+    "registros_validos_cancelados": {
+      "type": "number"
+    },
+    "grupos_marcados_ativo": {
+      "type": "number"
+    },
+    "grupos_marcados_inadimplente": {
+      "type": "number"
+    },
+    "grupos_marcados_cancelado": {
+      "type": "number"
+    },
+    "alertas": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "log_etapas": {
+      "type": "object"
+    },
+    "erro_mensagem": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "competencia"
+  ]
+}
