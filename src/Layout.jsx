@@ -105,8 +105,12 @@ export default function Layout({ children }) {
                   <Shield className="w-6 h-6 text-white" />
                 </div>
               ) : (
-                <div className="w-11 h-11 bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl flex items-center justify-center shadow-lg shadow-blue-900/30">
-                  <Shield className="w-6 h-6 text-white" />
+                <div className="h-11 w-28 rounded-xl bg-white flex items-center justify-center shadow-lg shadow-blue-900/30 px-2 py-1.5">
+                  <img
+                    src="https://media.base44.com/images/public/6a7e149b7b17985a413b3c7e/5260f1be2_WhatsAppImage2026-08-13at191445.jpeg"
+                    alt="Mont Seguros"
+                    className="w-full h-full object-contain"
+                  />
                 </div>
               )}
               <div className="leading-tight">
