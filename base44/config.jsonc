@@ -1,5 +1,5 @@
 {
-  "name": "OON Gest\u00e3o Sinistro",
+  "name": "Mont Seguros",
   "site": {
     "installCommand": "npm install",
     "buildCommand": "npm run build",
