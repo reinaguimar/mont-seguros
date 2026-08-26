@@ -74,6 +74,7 @@ export default function GestaoUsuarios() {
   const [filiais, setFiliais] = useState([]);
   const [filialDialog, setFilialDialog] = useState({ open: false, usuario: null, acesso: 'total', selecionadas: [], padrao: '' });
   const [revogarDialog, setRevogarDialog] = useState({ open: false, usuario: null, loading: false });
+  const [conviteDialog, setConviteDialog] = useState({ open: false, email: '', perfil: 'usuario', loading: false });
 
   useEffect(() => {
     loadData();
@@ -256,6 +257,34 @@ export default function GestaoUsuarios() {
     }
   };
 
+  const handleConvidarUsuario = async () => {
+    const { email, perfil } = conviteDialog;
+    if (!email || !email.includes('@')) { setError('Informe um e-mail válido'); return; }
+    setConviteDialog(prev => ({ ...prev, loading: true }));
+    try {
+      setError(null);
+      const role = (perfil === 'administrador' || perfil === 'super_administrador') ? 'admin' : 'user';
+      await base44.users.inviteUser(email, role);
+      // Recarrega a lista e define o perfil_sistema selecionado
+      const resp = await base44.functions.invoke('listarUsuarios', {});
+      const todos = resp.data?.usuarios || [];
+      const novoUsuario = todos.find(u => u.email?.toLowerCase() === email.toLowerCase());
+      if (novoUsuario && perfil && perfil !== 'usuario') {
+        await base44.functions.invoke('alterarPerfilUsuario', { usuario_id: novoUsuario.id, novo_perfil: perfil });
+        const resp2 = await base44.functions.invoke('listarUsuarios', {});
+        setUsuarios(resp2.data?.usuarios || []);
+      } else {
+        setUsuarios(todos);
+      }
+      setSuccessMessage(`Acesso criado para ${email}. O usuário receberá um e-mail para definir a senha.`);
+      setConviteDialog({ open: false, email: '', perfil: 'usuario', loading: false });
+      setTimeout(() => setSuccessMessage(null), 6000);
+    } catch (err) {
+      setError('Erro ao criar acesso: ' + err.message);
+      setConviteDialog(prev => ({ ...prev, loading: false }));
+    }
+  };
+
   const usuariosFiltrados = usuarios.filter(u => {
     const matchSearch = u.full_name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
                        u.email?.toLowerCase().includes(searchTerm.toLowerCase());
@@ -302,6 +331,11 @@ export default function GestaoUsuarios() {
               Gerencie permissões e visualize todos os usuários do sistema
             </p>
           </div>
+          {pode('usuarios', 'criar') && (
+            <Button onClick={() => setConviteDialog({ open: true, email: '', perfil: 'usuario', loading: false })}>
+              <UserPlus className="w-4 h-4 mr-2" /> Criar Acesso
+            </Button>
+          )}
         </div>
 
         {/* Bootstrap Alert */}
@@ -721,6 +755,51 @@ export default function GestaoUsuarios() {
               <div className="flex justify-end gap-2 pt-2">
                 <Button variant="outline" onClick={() => setFilialDialog({ open: false, usuario: null, acesso: 'total', selecionadas: [], padrao: '' })}>Cancelar</Button>
                 <Button onClick={handleSalvarFiliais}>Salvar</Button>
+              </div>
+            </div>
+          </DialogContent>
+        </Dialog>
+
+        {/* Dialog Criar Acesso / Convidar Usuário */}
+        <Dialog open={conviteDialog.open} onOpenChange={(open) => setConviteDialog(prev => ({ ...prev, open }))}>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle className="flex items-center gap-2"><UserPlus className="w-5 h-5" /> Criar Acesso</DialogTitle>
+              <DialogDescription>
+                Convide um novo usuário por e-mail. Ele receberá um link para definir a senha e acessar o sistema.
+              </DialogDescription>
+            </DialogHeader>
+            <div className="space-y-4 py-2">
+              <div className="space-y-2">
+                <Label htmlFor="convite-email">E-mail</Label>
+                <Input
+                  id="convite-email"
+                  type="email"
+                  value={conviteDialog.email}
+                  onChange={(e) => setConviteDialog(prev => ({ ...prev, email: e.target.value }))}
+                  placeholder="nome@empresa.com"
+                />
+              </div>
+              <div className="space-y-2">
+                <Label>Perfil de Acesso</Label>
+                <Select value={conviteDialog.perfil} onValueChange={(v) => setConviteDialog(prev => ({ ...prev, perfil: v }))}>
+                  <SelectTrigger><SelectValue /></SelectTrigger>
+                  <SelectContent>
+                    {Object.entries(PERFIS_INFO)
+                      .filter(([key]) => key !== 'super_administrador' || isPerfil('super_administrador'))
+                      .map(([key, info]) => (
+                        <SelectItem key={key} value={key}>{info.nome} — {info.descricao}</SelectItem>
+                      ))}
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="flex justify-end gap-2 pt-2">
+                <Button variant="outline" onClick={() => setConviteDialog({ open: false, email: '', perfil: 'usuario', loading: false })}>
+                  Cancelar
+                </Button>
+                <Button onClick={handleConvidarUsuario} disabled={conviteDialog.loading}>
+                  {conviteDialog.loading ? 'Enviando...' : 'Criar Acesso'}
+                </Button>
               </div>
             </div>
           </DialogContent>
