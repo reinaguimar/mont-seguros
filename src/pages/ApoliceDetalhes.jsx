@@ -443,7 +443,7 @@ export default function ApoliceDetalhes() {
               <div className="cert-cell"><div className="cert-cell-label">Apolice n.o</div><div className="cert-cell-value" style={{ fontFamily: 'monospace', fontSize: '11px', fontWeight: 700 }}>{apolice.numero_apolice}</div></div>
             </div>
             <div className={`cert-grid ${isSubRep ? 'cert-grid-2' : ''}`} style={{ gridTemplateColumns: isSubRep ? '1fr 1fr' : '1fr' }}>
-              <div className="cert-cell"><div className="cert-cell-label">Representante</div><div className="cert-cell-value">NEW SOLUCOES LTDA - CNPJ: 13.995.255/0001-83</div></div>
+              <div className="cert-cell"><div className="cert-cell-label">Representante</div><div className="cert-cell-value">Mont Seguros - CNPJ: 29.950.829/0001-37</div></div>
               {isSubRep && (
                 <div className="cert-cell"><div className="cert-cell-label">Sub-Representante</div><div className="cert-cell-value">{filial?.nome} - CNPJ: {filial?.cnpj || '--'}</div></div>
               )}
@@ -520,7 +520,7 @@ export default function ApoliceDetalhes() {
             <p className="cert-legal-title">Informacoes Regulamentares e Legais</p>
             <div className="cert-legal-ids">
               <p><strong>Seguradora:</strong> OON Seguradora S.A. - CNPJ: 43.249.519/0001-10 - Codigo Susep 110627</p>
-              <p><strong>Representante:</strong> NEW SOLUCOES LTDA - CNPJ: 13.995.255/0001-83</p>
+              <p><strong>Representante:</strong> Mont Seguros - CNPJ: 29.950.829/0001-37</p>
               {isSubRep && (
                 <p><strong>Sub-Representante:</strong> {apolice.filial_nome || '-'} - CNPJ: {filial?.cnpj || '--'}</p>
               )}
