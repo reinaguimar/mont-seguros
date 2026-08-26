@@ -8,6 +8,7 @@ import {
   Upload, Play, CheckCircle, XCircle, Loader2, AlertCircle,
   FileText, BarChart3, RefreshCw, Info
 } from "lucide-react";
+import ValidacaoEmissaoModal from "@/components/emissao-lote/ValidacaoEmissaoModal";
 
 // ─── Configurações fixas ────────────────────────────────────────────────────
 const CONFIG = {
@@ -18,6 +19,13 @@ const CONFIG = {
 
 const PRODUTOS_PADRAO = ["FR", "COL_PARCIAL", "COL_TOTAL", "INCENDIO", "RCFV"];
 const RCFV_LMI_PADRAO = 30000;
+
+const rcfvLmiEfetivo = (row, filial, rcfvLmiSelecionado) => {
+  if (row.rcfv_lmi && filial?.rcfv_lmis_permitidos?.length && filial.rcfv_lmis_permitidos.includes(row.rcfv_lmi)) {
+    return row.rcfv_lmi;
+  }
+  return rcfvLmiSelecionado;
+};
 
 const COBERTURAS_FIXAS = [
   { id_cobertura: "001", ramo: 31, nome: "Furto",                            percentual: 0.20, produto: "FR" },
@@ -177,6 +185,7 @@ const parseCSV = (text) => {
       data_movimento: parseDate((cols[5] || "").trim()),
       lmi_geral: parseBRL((cols[6] || "").trim()),
       premio_bruto: parseBRL((cols[7] || "").trim()),
+      rcfv_lmi: parseBRL((cols[8] || "").trim()),
     };
   }).filter(r => r.cpf_segurado);
 };
@@ -244,6 +253,8 @@ export default function EmissaoLote() {
   const [rodando, setRodando] = useState(false);
   const [progresso, setProgresso] = useState(0);
   const [carregandoApolices, setCarregandoApolices] = useState(false);
+  const [rcfvLmiSelecionado, setRcfvLmiSelecionado] = useState(RCFV_LMI_PADRAO);
+  const [mostrarValidacao, setMostrarValidacao] = useState(false);
   const fileRef = useRef();
   const pauseRef = useRef(false);
 
@@ -259,6 +270,16 @@ export default function EmissaoLote() {
       }).catch(() => {});
     });
   }, []);
+
+  // Atualiza o LMI RCF-V selecionado quando a filial muda
+  useEffect(() => {
+    if (filialSelecionada?.rcfv_lmis_permitidos?.length) {
+      const permitidos = filialSelecionada.rcfv_lmis_permitidos;
+      if (!permitidos.includes(rcfvLmiSelecionado)) {
+        setRcfvLmiSelecionado(permitidos[0]);
+      }
+    }
+  }, [filialSelecionada]);
 
   // Busca TODAS as apólices do banco em uma única chamada (paginada)
   const buscarTodasApolices = async () => {
@@ -305,7 +326,7 @@ export default function EmissaoLote() {
     );
   };
 
-  const emitirApolice = async (row, idx, filialOverride, numeroPreCalculado) => {
+  const emitirApolice = async (row, idx, filialOverride, numeroPreCalculado, rcfvLmi) => {
     setStatus(prev => ({ ...prev, [idx]: { state: "processing" } }));
 
     // Duplicatas: ignorar silenciosamente (não é erro, não gera apólice)
@@ -363,7 +384,8 @@ export default function EmissaoLote() {
       filialId = filial.id;
     }
 
-    const coberturas = calcularCoberturas(row.premio_bruto, row.lmi_geral, RCFV_LMI_PADRAO);
+    const rcfvLmiFinal = rcfvLmiEfetivo(row, filial, rcfvLmi);
+    const coberturas = calcularCoberturas(row.premio_bruto, row.lmi_geral, rcfvLmiFinal);
     const iof_total = Math.round(row.premio_bruto * CONFIG.aliquota_iof * 100) / 100;
     const corretagem = Math.round(row.premio_bruto * CONFIG.percentual_corretagem * 100) / 100;
 
@@ -384,7 +406,7 @@ export default function EmissaoLote() {
       lmi_geral: row.lmi_geral,
       premio_bruto_total: row.premio_bruto,
       produtos: PRODUTOS_PADRAO,
-      rcfv_lmi: RCFV_LMI_PADRAO,
+      rcfv_lmi: rcfvLmiFinal,
       id_objeto: row._placa_norm || row.placa,
       filial_id: filial.id,
       filial_codigo_susep: filial.codigo_susep,
@@ -483,7 +505,7 @@ export default function EmissaoLote() {
       if (pauseRef.current) break;
       if (status[i]?.state === "ok") { done++; continue; }
       try {
-        await emitirApolice(linhas[i], i, filial, numerosPreCalculados[i]);
+        await emitirApolice(linhas[i], i, filial, numerosPreCalculados[i], rcfvLmiSelecionado);
       } catch (e) {
         setStatus(prev => ({ ...prev, [i]: { state: "error", msg: e.message || "Erro desconhecido" } }));
       }
@@ -543,7 +565,7 @@ export default function EmissaoLote() {
         <CardContent className="pt-4 pb-4">
           <p className="text-sm font-semibold text-blue-800 mb-2">Produtos que serão contratados em todas as apólices:</p>
           <div className="flex flex-wrap gap-2">
-            {["Furto e Roubo", "Colisão Parcial", "Colisão Total", "Incêndio e Fenômenos da Natureza", "RCF-V — LMI R$ 30.000,00"].map(p => (
+            {["Furto e Roubo", "Colisão Parcial", "Colisão Total", "Incêndio e Fenômenos da Natureza", `RCF-V — LMI R$ ${rcfvLmiSelecionado.toLocaleString("pt-BR")}`].map(p => (
               <Badge key={p} className="bg-blue-600 text-white text-xs">{p}</Badge>
             ))}
           </div>
@@ -560,7 +582,7 @@ export default function EmissaoLote() {
           >
             <Upload className="w-8 h-8 text-slate-400 mx-auto mb-3" />
             <p className="text-sm font-medium text-slate-700">Clique para selecionar o CSV</p>
-            <p className="text-xs text-slate-400 mt-1">Formato: filial;CPF segurado;CPF beneficiario;Placa;data inicio apolice;data do movimento;valor lmi;premio bruto</p>
+            <p className="text-xs text-slate-400 mt-1">Formato: filial;CPF segurado;CPF beneficiario;Placa;data inicio apolice;data do movimento;valor lmi;premio bruto;LMI RCF-V (opcional)</p>
             <input ref={fileRef} type="file" accept=".csv,.txt" className="hidden" onChange={handleFile} />
           </div>
 
@@ -639,6 +661,29 @@ export default function EmissaoLote() {
                     </button>
                   ))}
                 </div>
+                {filialSelecionada?.rcfv_lmis_permitidos?.length > 0 && (
+                  <div className="mb-3">
+                    <label className="block text-xs font-semibold text-amber-900 mb-1.5">LMI RCF-V (Limite Máximo Indenização)</label>
+                    <div className="flex flex-wrap gap-2">
+                      {filialSelecionada.rcfv_lmis_permitidos.map(v => (
+                        <button
+                          key={v}
+                          onClick={() => setRcfvLmiSelecionado(v)}
+                          className={`px-3 py-1.5 rounded-lg border-2 text-sm font-semibold transition-all ${
+                            rcfvLmiSelecionado === v
+                              ? "border-blue-600 bg-blue-600 text-white shadow-md"
+                              : "border-slate-300 bg-white text-slate-700 hover:border-blue-400"
+                          }`}
+                        >
+                          R$ {v.toLocaleString("pt-BR")}
+                        </button>
+                      ))}
+                    </div>
+                    <p className="text-xs text-amber-700 mt-1.5">
+                      O LMI RCF-V será aplicado a todas as apólices. Se o CSV informar um LMI RCF-V na coluna 9 (após o prêmio bruto), ele será usado por linha quando permitido para a filial.
+                    </p>
+                  </div>
+                )}
                 <p className="text-xs text-amber-700">
                   Todas as {total} apólices desta emissão serão registradas sob a filial selecionada. Esta ação não pode ser desfeita após a emissão.
                 </p>
@@ -655,7 +700,7 @@ export default function EmissaoLote() {
           <div className="flex gap-3">
             {!rodando ? (
               <Button
-                onClick={iniciarEmissao}
+                onClick={() => setMostrarValidacao(true)}
                 disabled={pendentes === 0 || !filialSelecionada}
                 className={`gap-2 ${filialSelecionada ? "bg-green-600 hover:bg-green-700" : "bg-slate-300 cursor-not-allowed"}`}
               >
@@ -688,6 +733,7 @@ export default function EmissaoLote() {
                     <th className="px-3 py-2 font-semibold text-slate-600">CPF Segurado</th>
                     <th className="px-3 py-2 font-semibold text-slate-600">Placa</th>
                     <th className="px-3 py-2 font-semibold text-slate-600">LMI</th>
+                    <th className="px-3 py-2 font-semibold text-slate-600">LMI RCF-V</th>
                     <th className="px-3 py-2 font-semibold text-slate-600">Prêmio Bruto</th>
                     <th className="px-3 py-2 font-semibold text-slate-600">Status</th>
                     <th className="px-3 py-2 font-semibold text-slate-600">Alertas / Nº Apólice</th>
@@ -711,6 +757,18 @@ export default function EmissaoLote() {
                         <td className="px-3 py-2 font-mono text-xs">{row.cpf_segurado}</td>
                         <td className="px-3 py-2 font-mono font-semibold">{row._placa_norm || row.placa || <span className="text-red-400 italic">ausente</span>}</td>
                         <td className="px-3 py-2">{row.lmi_geral.toLocaleString("pt-BR", { style: "currency", currency: "BRL" })}</td>
+                        <td className="px-3 py-2">
+                          {(() => {
+                            const lmiFinal = rcfvLmiEfetivo(row, filialSelecionada, rcfvLmiSelecionado);
+                            const fromCsv = row.rcfv_lmi && filialSelecionada?.rcfv_lmis_permitidos?.includes(row.rcfv_lmi);
+                            return (
+                              <span className={fromCsv ? "text-blue-700 font-semibold" : ""}>
+                                {lmiFinal.toLocaleString("pt-BR", { style: "currency", currency: "BRL" })}
+                                {fromCsv && <span className="text-[10px] text-blue-500 ml-1">(CSV)</span>}
+                              </span>
+                            );
+                          })()}
+                        </td>
                         <td className="px-3 py-2">{row.premio_bruto.toLocaleString("pt-BR", { style: "currency", currency: "BRL" })}</td>
                         <td className="px-3 py-2">
                           {s.state === "pending" && <Badge variant="outline" className="text-slate-500">Pendente</Badge>}
@@ -741,6 +799,18 @@ export default function EmissaoLote() {
           </Card>
         </>
       )}
+
+      <ValidacaoEmissaoModal
+        open={mostrarValidacao}
+        onClose={() => setMostrarValidacao(false)}
+        onConfirm={() => { setMostrarValidacao(false); iniciarEmissao(); }}
+        linhas={linhas}
+        filial={filialSelecionada}
+        rcfvLmi={rcfvLmiSelecionado}
+        totalNovas={totalNovas}
+        totalRenovacoes={totalRenovacoes}
+        totalDuplicatas={totalDuplicatas}
+      />
     </div>
   );
 }
