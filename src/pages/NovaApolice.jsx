@@ -144,8 +144,28 @@ export default function NovaApolice() {
     const { numeroGerado: numero_apolice, novoSequencial, filialId, filialCodigo } = await generatePolicyNumber(data.id_objeto, data.filial_id, data.filial_codigo_susep);
     const valor_corretagem_total = Math.round(data.premio_bruto * CONFIG.percentual_corretagem * 100) / 100;
 
-    const produtosSelecionados = COBERTURAS_FIXAS.filter(c => data.produtos.includes(c.produto));
-    const percentual_total_selecionado = produtosSelecionados.reduce((sum, c) => sum + c.percentual, 0);
+    // RCF-V é produto de PREÇO FIXO: cobra o valor configurado no cadastro da filial (por LMI).
+    const filiaisRcfv = await base44.entities.Filial.filter({ id: data.filial_id });
+    const filRcfv = filiaisRcfv[0] || {};
+    const precoRcfv = (lmi) => {
+      const v = filRcfv["rcfv_preco_" + lmi];
+      return (v === undefined || v === null || v === "") ? 35.90 : Number(v);
+    };
+    const temRCFV = data.produtos.includes("RCFV");
+    const valorFixoRcfv = temRCFV ? precoRcfv(data.rcfv_lmi || 100000) : 0;
+    const premio_distribuivel = Math.round((data.premio_bruto - valorFixoRcfv) * 100) / 100;
+
+    // Plano de PRODUTO UNICO: 100% do premio digitado vai para o unico produto selecionado,
+    // sem preco fixo e sem rateio entre produtos (o valor cobrado responde ao plano).
+    const produtoUnico = (data.produtos || []).length === 1 ? data.produtos[0] : null;
+    const pctTotalProdutoUnico = produtoUnico
+      ? COBERTURAS_FIXAS.filter(c => c.produto === produtoUnico).reduce((s, c) => s + c.percentual, 0)
+      : 0;
+
+    // Percentual apenas dos produtos NÃO-RCFV selecionados (RCFV sai do rateio) — plano combinado
+    const percentual_total_selecionado = COBERTURAS_FIXAS
+      .filter(c => c.produto !== "RCFV" && data.produtos.includes(c.produto))
+      .reduce((sum, c) => sum + c.percentual, 0);
 
     const coberturas_calculadas = COBERTURAS_FIXAS.map((cobertura, index) => {
       let premio_bruto = 0;
@@ -155,9 +175,16 @@ export default function NovaApolice() {
 
       if (isSelected) {
         valor_maximo = cobertura.produto === "RCFV" ? (data.rcfv_lmi || 100000) : data.lmi_geral;
-        if (percentual_total_selecionado > 0) {
+        if (produtoUnico) {
+          // Produto unico: distribui o premio total apenas entre as coberturas deste produto
+          if (pctTotalProdutoUnico > 0) {
+            premio_bruto = Math.round(data.premio_bruto * (cobertura.percentual / pctTotalProdutoUnico) * 100) / 100;
+          }
+        } else if (cobertura.produto === "RCFV") {
+          premio_bruto = valorFixoRcfv;
+        } else if (percentual_total_selecionado > 0) {
           const percentual_relativo = cobertura.percentual / percentual_total_selecionado;
-          premio_bruto = Math.round(data.premio_bruto * percentual_relativo * 100) / 100;
+          premio_bruto = Math.round(premio_distribuivel * percentual_relativo * 100) / 100;
         }
       }
       
@@ -293,8 +320,6 @@ export default function NovaApolice() {
         break;
       case 3:
         if (!formData.produtos || formData.produtos.length === 0) errors.push("Selecione ao menos um produto");
-        // Check if "FR" (Furto e Roubo) is always selected as it's the base.
-        if (!formData.produtos.includes("FR")) errors.push("O produto 'Furto e Roubo' é obrigatório.");
         break;
       default:
         break;
