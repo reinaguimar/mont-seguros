@@ -41,6 +41,9 @@ const RCFV_LMIS = [
   { value: 100000, label: "RCF-V — R$ 100.000" },
 ];
 
+// Preco fixo (premio bruto) padrao do RCF-V por LMI. Fallback quando a filial ainda nao configurou.
+const RCFV_PRECOS_PADRAO = { 30000: 35.90, 50000: 35.90, 100000: 35.90 };
+
 const TODOS_PRODUTOS = ["FR", "RCFV", "COL_PARCIAL", "COL_TOTAL", "INCENDIO"];
 
 const filialVazio = {
@@ -54,6 +57,7 @@ const filialVazio = {
   tipo: "sub_representante",
   produtos_permitidos: [...TODOS_PRODUTOS],
   rcfv_lmis_permitidos: [30000, 50000, 100000],
+  rcfv_precos: { ...RCFV_PRECOS_PADRAO },
   logo_url: "",
   cor_primaria: "",
   cor_texto_cabecalho: "#ffffff",
@@ -117,6 +121,11 @@ export default function GestaoFiliais() {
       rcfv_lmis_permitidos: filial.rcfv_lmis_permitidos && filial.rcfv_lmis_permitidos.length > 0
         ? [...filial.rcfv_lmis_permitidos]
         : [30000, 50000, 100000],
+      rcfv_precos: {
+        30000: filial.rcfv_preco_30000 ?? RCFV_PRECOS_PADRAO[30000],
+        50000: filial.rcfv_preco_50000 ?? RCFV_PRECOS_PADRAO[50000],
+        100000: filial.rcfv_preco_100000 ?? RCFV_PRECOS_PADRAO[100000],
+      },
       logo_url: filial.logo_url || "",
       cor_primaria: filial.cor_primaria || "",
       cor_texto_cabecalho: filial.cor_texto_cabecalho || "#ffffff",
@@ -187,6 +196,20 @@ export default function GestaoFiliais() {
       ? [...outrosProdutos, "RCFV"]
       : outrosProdutos;
 
+    // Precos fixos do RCF-V: gravados em 3 campos numericos (persistem sempre).
+    const precosForm = form.rcfv_precos || {};
+    const parsePreco = (raw) => {
+      if (typeof raw === "number") return raw;
+      if (raw == null || String(raw).trim() === "") return 35.90;
+      let s = String(raw).trim();
+      if (s.includes(",")) s = s.replace(/\./g, "").replace(",", ".");
+      const n = parseFloat(s);
+      return isNaN(n) ? 0 : n;
+    };
+    const rcfvPreco30000 = parsePreco(precosForm[30000] ?? precosForm["30000"]);
+    const rcfvPreco50000 = parsePreco(precosForm[50000] ?? precosForm["50000"]);
+    const rcfvPreco100000 = parsePreco(precosForm[100000] ?? precosForm["100000"]);
+
     setSalvando(true);
     const dados = {
       nome: form.nome.trim(),
@@ -199,6 +222,9 @@ export default function GestaoFiliais() {
       tipo: form.tipo || "sub_representante",
       produtos_permitidos: produtosPermitidosFinal,
       rcfv_lmis_permitidos: lmisRcfv,
+      rcfv_preco_30000: rcfvPreco30000,
+      rcfv_preco_50000: rcfvPreco50000,
+      rcfv_preco_100000: rcfvPreco100000,
       logo_url: form.logo_url || "",
       cor_primaria: form.cor_primaria || "",
       cor_texto_cabecalho: form.cor_texto_cabecalho || "#ffffff",
