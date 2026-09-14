@@ -1,14 +1,34 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
+import { base44 } from "@/api/base44Client";
 
 const MESES = ["", "Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho",
                "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"];
 
 const fmt = (v) => (v || 0).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 
+// Formata CNPJ (14 digitos) como XX.XXX.XXX/XXXX-XX; caso contrario devolve original.
+const fmtCnpj = (v) => {
+  const d = String(v || "").replace(/\D/g, "");
+  if (d.length === 14) return d.replace(/^(\d{2})(\d{3})(\d{3})(\d{4})(\d{2})$/, "$1.$2.$3/$4-$5");
+  return v || "";
+};
+
 export default function BorderoImpressao({ fechamento }) {
+  const [matriz, setMatriz] = useState(null);
+
+  useEffect(() => {
+    let alive = true;
+    base44.entities.Filial.filter({ tipo: "matriz" })
+      .then((ms) => { if (alive) setMatriz((ms && ms[0]) || null); })
+      .catch(() => {});
+    return () => { alive = false; };
+  }, []);
+
   if (!fechamento) return null;
 
   const f = fechamento;
+  const repNome = matriz?.nome || f.filial_nome || "—";
+  const repCnpj = matriz?.cnpj ? fmtCnpj(matriz.cnpj) : "—";
 
   return (
     <div style={{
@@ -51,8 +71,8 @@ export default function BorderoImpressao({ fechamento }) {
             <Row label="SEGURADORA:" value="OON SEGURADORA S.A" bold />
             <Row label="CNPJ:" value="43.249.519/0001-10" />
             <div style={{ height: '8px' }} />
-            <Row label="REPRESENTANTE (MGA):" value="NEW SOLUÇÕES LTDA - ME" bold />
-            <Row label="CNPJ:" value="13.995.255/0001-83" />
+            <Row label="REPRESENTANTE (MGA):" value={repNome} bold />
+            <Row label="CNPJ:" value={repCnpj} />
           </div>
         </Section>
 
@@ -89,8 +109,8 @@ export default function BorderoImpressao({ fechamento }) {
         <Section title="5. APURAÇÃO DA REMUNERAÇÃO DO REPRESENTANTE (MGA)">
           <Table rows={[
             { item: '5.1', desc: `Comissão Fixa: (${f.percentual_comissao_mga || 10}% sobre o Prêmio Emitido 2.1).`, val: `R$ ${fmt(f.comissao_fixa_mga)}` },
-            { item: '5.2', desc: 'Lucro Operacional (LO): [Prêmio Arrecadado (2.3)] – [Sinistros Pagos (3.2)] – [Remuneração Seguradora (4.3)].', val: `R$ ${fmt(f.lucro_operacional)}` },
-            { item: '5.3', desc: 'Remuneração Total do Representante: (Comissão 5.1 + Lucro Operacional 5.2).', val: `R$ ${fmt(f.remuneracao_total_mga)}`, highlight: true },
+            { item: '5.2', desc: 'Lucro Operacional (LO): [Prêmio Arrecadado (2.3)] – [Sinistros Pagos (3.2)] – [Remuneração Seguradora (4.3)].', val: `R$ ${fmt(Math.max(0, f.lucro_operacional || 0))}` },
+            { item: '5.3', desc: 'Remuneração Total do Representante: (Comissão 5.1 + Lucro Operacional 5.2).', val: `R$ ${fmt(Math.max(0, f.remuneracao_total_mga || 0))}`, highlight: true },
           ]} />
         </Section>
 
@@ -132,12 +152,12 @@ export default function BorderoImpressao({ fechamento }) {
 
           <div style={{ marginBottom: '6px', fontWeight: '600', fontSize: '11px' }}>6.2 Repasse Final para a SEGURADORA</div>
           <Table rows={[
-            { item: '6.2', desc: 'Remuneração da Seguradora (4.3) + Saldo Técnico (6.1, se positivo e for da seguradora):', val: `R$ ${fmt(f.repasse_seguradora)}`, highlight: true },
+            { item: '6.2', desc: 'Remuneração da Seguradora (4.3) + Saldo Técnico (6.1, se positivo e for da seguradora):', val: `R$ ${fmt(Math.max(0, f.repasse_seguradora || 0))}`, highlight: true },
           ]} />
 
           <div style={{ marginBottom: '6px', fontWeight: '600', fontSize: '11px', marginTop: '8px' }}>6.3 Retenção pelo REPRESENTANTE</div>
           <Table rows={[
-            { item: '6.3', desc: 'O Representante retém o valor de sua remuneração (5.4) via compensação direta.', val: `R$ ${fmt(f.retencao_mga)}`, highlight: true },
+            { item: '6.3', desc: 'O Representante retém o valor de sua remuneração (5.4) via compensação direta.', val: `R$ ${fmt(Math.max(0, f.retencao_mga || 0))}`, highlight: true },
           ]} />
         </Section>
 
