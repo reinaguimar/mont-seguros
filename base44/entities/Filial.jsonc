@@ -8,11 +8,11 @@
     },
     "codigo_susep": {
       "type": "string",
-      "description": "C\u00f3digo SUSEP global da seguradora (6 d\u00edgitos) - compartilhado entre filiais"
+      "description": "Codigo SUSEP global da seguradora (6 digitos) - compartilhado entre filiais"
     },
     "codigo_filial": {
       "type": "string",
-      "description": "C\u00f3digo \u00fanico da filial (2 chars alfanum\u00e9rico) - usado no n\u00famero da ap\u00f3lice como XX em: SUSEP.ANO.031.XX.SEQ.REC"
+      "description": "Codigo unico da filial (2 chars alfanumerico) - usado no numero da apolice como XX em: SUSEP.ANO.031.XX.SEQ.REC"
     },
     "cnpj": {
       "type": "string",
@@ -29,17 +29,17 @@
     "ativo": {
       "type": "boolean",
       "default": true,
-      "description": "Se a filial est\u00e1 ativa para emiss\u00e3o"
+      "description": "Se a filial esta ativa para emissao"
     },
     "ultimo_numero_sequencial": {
       "type": "number",
       "default": 0,
-      "description": "\u00daltimo n\u00famero sequencial YYYYY usado por esta filial"
+      "description": "Ultimo numero sequencial YYYYY usado por esta filial"
     },
     "total_apolices": {
       "type": "number",
       "default": 0,
-      "description": "Total de ap\u00f3lices emitidas por esta filial"
+      "description": "Total de apolices emitidas por esta filial"
     },
     "tipo": {
       "type": "string",
@@ -55,14 +55,29 @@
       "items": {
         "type": "string"
       },
-      "description": "Produtos que esta filial pode comercializar na ap\u00f3lice. Valores: FR, RCFV, COL_PARCIAL, COL_TOTAL, INCENDIO"
+      "description": "Produtos que esta filial pode comercializar na apolice. Valores: FR, RCFV, COL_PARCIAL, COL_TOTAL, INCENDIO"
     },
     "rcfv_lmis_permitidos": {
       "type": "array",
       "items": {
         "type": "number"
       },
-      "description": "Limites de RCF-V (LMI) que esta filial pode comercializar. Valores poss\u00edveis: 30000, 50000, 100000"
+      "description": "Limites de RCF-V (LMI) que esta filial pode comercializar. Valores possiveis: 30000, 50000, 100000"
+    },
+    "rcfv_preco_30000": {
+      "type": "number",
+      "default": 35.9,
+      "description": "Premio fixo (R$) do RCF-V para o LMI de R$ 30.000, aplicado na emissao"
+    },
+    "rcfv_preco_50000": {
+      "type": "number",
+      "default": 35.9,
+      "description": "Premio fixo (R$) do RCF-V para o LMI de R$ 50.000, aplicado na emissao"
+    },
+    "rcfv_preco_100000": {
+      "type": "number",
+      "default": 35.9,
+      "description": "Premio fixo (R$) do RCF-V para o LMI de R$ 100.000, aplicado na emissao"
     },
     "logo_url": {
       "type": "string",
@@ -75,7 +90,7 @@
     },
     "site": {
       "type": "string",
-      "description": "Site da filial (ex: gestaonew.com.br)"
+      "description": "Site da filial"
     },
     "telefone_sac": {
       "type": "string",
@@ -95,11 +110,11 @@
     },
     "cor_primaria": {
       "type": "string",
-      "description": "Cor principal da identidade visual em hex (ex: #1a3a5c). Usada no certificado."
+      "description": "Cor principal da identidade visual em hex."
     },
     "cor_texto_cabecalho": {
       "type": "string",
-      "description": "Cor do texto no cabe\u00e7alho. Use #ffffff para fundo escuro ou #1a1a1a para fundo claro."
+      "description": "Cor do texto no cabecalho."
     }
   },
   "required": [
