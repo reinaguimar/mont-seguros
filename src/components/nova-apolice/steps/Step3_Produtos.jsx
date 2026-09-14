@@ -4,7 +4,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
 
 const PRODUTOS = [
-  { value: "FR", label: "Furto e Roubo", description: "Proteção contra furto e roubo do veículo. (Cobertura Básica)", isBasic: true },
+  { value: "FR", label: "Furto e Roubo", description: "Proteção contra furto e roubo do veículo. (Cobertura Básica)" },
   { value: "COL_PARCIAL", label: "Colisão Parcial", description: "Cobertura para danos parciais por colisão." },
   { value: "COL_TOTAL", label: "Colisão Total", description: "Cobertura para perda total por colisão." },
   { value: "INCENDIO", label: "Incendio e Fenomenos da Natureza", description: "Proteção contra danos causados por incêndio e fenômenos da natureza." },
@@ -17,9 +17,19 @@ const RCFV_OPCOES = [
   { lmi: 100000, label: "R$ 100.000,00", premio: 35.90 },
 ];
 
+const RCFV_PRECO_PADRAO = 35.90;
+const fmtBRL = (v) => Number(v || 0).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+
 export default function Step3Produtos({ formData, onInputChange, COBERTURAS_FIXAS }) {
   const [produtosPermitidos, setProdutosPermitidos] = useState(null);
   const [rcfvLmisPermitidos, setRcfvLmisPermitidos] = useState(null);
+  const [rcfvPrecos, setRcfvPrecos] = useState(null);
+
+  const precoDoLmi = (lmi) => {
+    if (!rcfvPrecos) return RCFV_PRECO_PADRAO;
+    const v = rcfvPrecos[lmi] ?? rcfvPrecos[String(lmi)];
+    return (v === undefined || v === null || v === "") ? RCFV_PRECO_PADRAO : Number(v);
+  };
 
   useEffect(() => {
     const carregarFilial = async () => {
@@ -33,9 +43,11 @@ export default function Step3Produtos({ formData, onInputChange, COBERTURAS_FIXA
         const filial = filiais[0];
         setProdutosPermitidos(filial?.produtos_permitidos || null);
         setRcfvLmisPermitidos(filial?.rcfv_lmis_permitidos || null);
+        setRcfvPrecos(filial ? { 30000: filial.rcfv_preco_30000, 50000: filial.rcfv_preco_50000, 100000: filial.rcfv_preco_100000 } : null);
       } catch {
         setProdutosPermitidos(null);
         setRcfvLmisPermitidos(null);
+        setRcfvPrecos(null);
       }
     };
     carregarFilial();
@@ -108,7 +120,11 @@ export default function Step3Produtos({ formData, onInputChange, COBERTURAS_FIXA
                 </Label>
                 {produto.value === 'RCFV' && (
                   <div className="text-right">
-                    <div className="text-sm font-semibold text-green-600">Prêmio Fixo: R$ 35,90</div>
+                    {(formData.produtos || []).length > 1 ? (
+                      <div className="text-sm font-semibold text-green-600">Prêmio Fixo: R$ {fmtBRL(precoDoLmi(rcfvLmi))}</div>
+                    ) : (
+                      <div className="text-xs text-slate-500">Prêmio conforme valor informado</div>
+                    )}
                   </div>
                 )}
               </div>
@@ -132,7 +148,7 @@ export default function Step3Produtos({ formData, onInputChange, COBERTURAS_FIXA
                         : 'bg-white text-slate-700 border-slate-300 hover:border-blue-400'
                     }`}
                   >
-                    {opcao.label}
+                    {opcao.label} — R$ {fmtBRL(precoDoLmi(opcao.lmi))}
                   </button>
                 ))}
               </div>
