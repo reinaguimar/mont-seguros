@@ -186,7 +186,19 @@ export default function FechamentoDetalhes() {
   const handleExportBorderoPDF = async () => {
     setIsExportingBordero(true);
     try {
-      await generateBorderoPDF(fechamento);
+      // Representante (MGA) = matriz cadastrada no sistema (nao usar dados fixos)
+      let repNome = fechamento.filial_nome || "";
+      let repCnpj = "";
+      try {
+        const _ms = await base44.entities.Filial.filter({ tipo: "matriz" });
+        const _m = (_ms && _ms[0]) || null;
+        if (_m) {
+          repNome = _m.nome || repNome;
+          const _d = String(_m.cnpj || "").replace(/\D/g, "");
+          repCnpj = _d.length === 14 ? _d.replace(/^(\d{2})(\d{3})(\d{3})(\d{4})(\d{2})$/, "$1.$2.$3/$4-$5") : (_m.cnpj || "");
+        }
+      } catch (e) { /* fallback abaixo */ }
+      await generateBorderoPDF({ ...fechamento, representante_nome: repNome, representante_cnpj: repCnpj });
     } catch (err) {
       alert('Erro ao gerar PDF: ' + (err.message || 'Falha ao carregar componentes do PDF. Verifique sua conexão.'));
     } finally {
@@ -571,12 +583,12 @@ export default function FechamentoDetalhes() {
               </div>
               <div className="flex justify-between py-2 border-b">
                 <span className="text-slate-700">5.2 - Profit Sharing:</span>
-                <span className="font-semibold">R$ {(fechamento.lucro_operacional || 0).toLocaleString('pt-BR', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</span>
+                <span className="font-semibold">R$ {Math.max(0, fechamento.lucro_operacional || 0).toLocaleString('pt-BR', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</span>
               </div>
 
               <div className="flex justify-between py-2 bg-green-50 px-3 rounded">
                 <span className="font-semibold text-green-900">5.3 - Remuneração Total MGA (5.1 + 5.2):</span>
-                <span className="font-bold text-green-600">R$ {(fechamento.remuneracao_total_mga || 0).toLocaleString('pt-BR', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</span>
+                <span className="font-bold text-green-600">R$ {Math.max(0, fechamento.remuneracao_total_mga || 0).toLocaleString('pt-BR', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</span>
               </div>
             </div>
           </CardContent>
