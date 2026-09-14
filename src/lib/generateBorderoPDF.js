@@ -36,7 +36,7 @@ function gerarBordero(record) {
 
   var CNPJ_OON  = '43.249.519/0001-10';
   var SUSEP_NUM = '15414.627418/2021-15';
-  var CNPJ_MGA  = '13.995.255/0001-83';
+  var CNPJ_MGA  = record.representante_cnpj || '';
 
   // ── DADOS DO BANCO ────────────────────────────────────────────────────────
   var H6  = parseFloat(record.premio_emitido_bruto)  || 0;
@@ -44,7 +44,7 @@ function gerarBordero(record) {
   var H17 = parseFloat(record.iof_total_mes)          || 0;
   var H33 = parseFloat(record.cr_capital_aportado)    || 0;
   var H34 = parseFloat(record.cr_necessidade_capital) || 0;
-  var filialNome = record.filial_nome || 'NEW SOLUÇÕES LTDA - ME';
+  var filialNome = record.representante_nome || record.filial_nome || '';
 
   // ── FÓRMULAS (H29 calculado do zero — NUNCA usa record.lucro_operacional) ──
   var H8  = H6 + H7;
@@ -52,7 +52,9 @@ function gerarBordero(record) {
   var H20 = Math.abs(H7) * 0.20;
   var H21 = H17 + H20;
   var H22 = H6 * 0.1038;
-  var H23 = (H7 === 0) ? H22 : Math.max(H21, H22);
+  // Remuneracao da Seguradora = MAIOR entre R$ 5.000 (piso, Clausula 3.3), 10,38% e (IOF + 20% sinistros).
+  // Usa o valor ja apurado no fechamento; fallback recalcula com o piso de R$ 5.000.
+  var H23 = parseFloat(record.remuneracao_aplicada_seguradora) || Math.max(5000, H22, H21);
   var H26 = H6 * 0.10;
   var H29 = H8 - H23 - H26;
   var H35 = Math.max(0, H34 - H33);
