@@ -41,7 +41,7 @@ export default function Configuracoes() {
       cnpj: filial.cnpj || "",
       tipo: filial.tipo || "sub_representante",
       logo_url: filial.logo_url || "",
-      franquia_percentual: filial.franquia_percentual ?? 6,
+      franquia_percentual: filial.franquia_percentual ?? 10,
       site: filial.site || "",
       telefone_sac: filial.telefone_sac || "",
       email_sac: filial.email_sac || "",

@@ -85,8 +85,8 @@
     },
     "franquia_percentual": {
       "type": "number",
-      "default": 6,
-      "description": "Percentual de franquia sobre o LMI (ex: 6 = 6%)"
+      "default": 10,
+      "description": "Percentual de franquia (cota de participacao) sobre o LMI (ex: 10 = 10%)"
     },
     "site": {
       "type": "string",
