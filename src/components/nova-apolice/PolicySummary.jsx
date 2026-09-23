@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -62,7 +61,7 @@ export default function PolicySummary({ formData, calculatedData, onSave, onEdit
               <div>
                 <span className="text-slate-500">Fim:</span>
                 <p className="font-semibold">
-                  {format(calculatedData.data_fim, "dd/MM/yyyy", { locale: ptBR })}
+                  {format(new Date(calculatedData.data_fim + "T12:00:00"), "dd/MM/yyyy", { locale: ptBR })}
                 </p>
               </div>
               <div>

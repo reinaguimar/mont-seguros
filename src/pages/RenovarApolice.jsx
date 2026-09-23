@@ -12,6 +12,7 @@ import Stepper from "../components/nova-apolice/Stepper";
 import Step2ValoresVigencia from "../components/nova-apolice/steps/Step2_ValoresVigencia";
 import Step3Produtos from "../components/nova-apolice/steps/Step3_Produtos";
 import PolicySummary from "../components/nova-apolice/PolicySummary";
+import { calcularFimVigencia } from "@/lib/vigencia";
 
 const STEPS = ["Valores e Vigência", "Produtos e Coberturas"];
 
@@ -114,8 +115,7 @@ export default function RenovarApolice() {
   };
 
   const calculateDerivatives = async (data) => {
-    const startDate = new Date(data.data_inicio);
-    const endDate = addDays(startDate, CONFIG.prazo_em_dias);
+    const dataFim = calcularFimVigencia(data.data_inicio, CONFIG.prazo_em_dias);
     
     const { numeroGerado: numero_apolice, novoSequencial, filialId, filialCodigo } = await generatePolicyNumber(
       data.id_objeto,
@@ -187,9 +187,9 @@ export default function RenovarApolice() {
     const premio_comercial_total = Math.round((data.premio_bruto - iof_total) * 100) / 100;
 
     return { 
-      numero_apolice, 
-      data_fim: endDate, 
-      iof_total, 
+      numero_apolice,
+      data_fim: dataFim,
+      iof_total,
       premio_comercial_total,
       valor_corretagem_total,
       coberturas_calculadas,
@@ -310,9 +310,9 @@ export default function RenovarApolice() {
         valor_corretagem: calculatedData.valor_corretagem_total,
         iof: calculatedData.iof_total,
         data_inicio_apolice: formData.data_inicio,
-        data_fim_apolice: calculatedData.data_fim.toISOString().split('T')[0],
+        data_fim_apolice: calculatedData.data_fim,
         data_inicio_cobertura: formData.data_inicio,
-        data_fim_cobertura: calculatedData.data_fim.toISOString().split('T')[0],
+        data_fim_cobertura: calculatedData.data_fim,
         id_segurado: cleanCpfCnpj(formData.id_segurado),
         id_beneficiario: cleanCpfCnpj(formData.id_beneficiario),
         seguro_intermitente: true,

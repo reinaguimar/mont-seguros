@@ -10,6 +10,7 @@ import {
 } from "lucide-react";
 import ValidacaoEmissaoModal from "@/components/emissao-lote/ValidacaoEmissaoModal";
 import SeletorFilialLmi from "@/components/emissao-lote/SeletorFilialLmi";
+import { calcularFimVigencia } from "@/lib/vigencia";
 
 // ─── Configurações fixas ────────────────────────────────────────────────────
 const CONFIG = {
@@ -367,10 +368,7 @@ export default function EmissaoLote() {
       return;
     }
 
-    const startDate = new Date(row.data_inicio + "T12:00:00");
-    const endDate = new Date(startDate);
-    endDate.setDate(endDate.getDate() + CONFIG.prazo_em_dias);
-    const dataFim = endDate.toISOString().split("T")[0];
+    const dataFim = calcularFimVigencia(row.data_inicio, CONFIG.prazo_em_dias);
 
     // Verificar dupla renovação antes de gerar número
     if (row._tipo === "renovacao" && row._apoliceOriginal) {
