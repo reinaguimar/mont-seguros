@@ -495,7 +495,7 @@ export default function RenovarApolice() {
               <div>
                 <span className="text-slate-600 font-medium">Nova Vigência:</span>
                 <p className="font-semibold text-green-700">
-                  {formData.data_inicio && format(new Date(formData.data_inicio), "dd/MM/yyyy")} - {formData.data_inicio && format(addDays(new Date(formData.data_inicio), CONFIG.prazo_em_dias), "dd/MM/yyyy")}
+                  {formData.data_inicio && format(new Date(formData.data_inicio), "dd/MM/yyyy")} - {formData.data_inicio && format(new Date(calcularFimVigencia(formData.data_inicio) + "T12:00:00"), "dd/MM/yyyy")}
                 </p>
               </div>
             </div>
