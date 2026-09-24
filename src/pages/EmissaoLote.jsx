@@ -718,6 +718,8 @@ export default function EmissaoLote() {
                     <th className="px-3 py-2 font-semibold text-slate-600">Tipo</th>
                     <th className="px-3 py-2 font-semibold text-slate-600">CPF Segurado</th>
                     <th className="px-3 py-2 font-semibold text-slate-600">Placa</th>
+                    <th className="px-3 py-2 font-semibold text-slate-600">Início Vig.</th>
+                    <th className="px-3 py-2 font-semibold text-slate-600">Fim Vig.</th>
                     <th className="px-3 py-2 font-semibold text-slate-600">LMI</th>
                     <th className="px-3 py-2 font-semibold text-slate-600">LMI RCF-V</th>
                     <th className="px-3 py-2 font-semibold text-slate-600">Prêmio Bruto</th>
@@ -742,6 +744,8 @@ export default function EmissaoLote() {
                         </td>
                         <td className="px-3 py-2 font-mono text-xs">{row.cpf_segurado}</td>
                         <td className="px-3 py-2 font-mono font-semibold">{row._placa_norm || row.placa || <span className="text-red-400 italic">ausente</span>}</td>
+                        <td className="px-3 py-2 text-xs">{row.data_inicio ? row.data_inicio.split("-").reverse().join("/") : "—"}</td>
+                        <td className="px-3 py-2 text-xs">{row.data_inicio ? calcularFimVigencia(row.data_inicio).split("-").reverse().join("/") : "—"}</td>
                         <td className="px-3 py-2">{row.lmi_geral.toLocaleString("pt-BR", { style: "currency", currency: "BRL" })}</td>
                         <td className="px-3 py-2">
                           {(() => {
