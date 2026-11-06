@@ -29,7 +29,7 @@ const COLUNAS = [
   "Data do movimento (dd/mm/aaaa)",
   "Valor do LMI geral (R$)",
   "Prêmio bruto (R$)",
-  "LMI RCF-V (opcional)",
+  "LMI RCF-V (30/50/70/100 mil — opcional)",
 ];
 
 export default function ModeloPlanilha() {
@@ -76,7 +76,7 @@ export default function ModeloPlanilha() {
       </div>
 
       <p className="mt-3 text-xs text-slate-500">
-        Deixe a última coluna em branco para usar o LMI RCF-V selecionado acima. A primeira linha (cabeçalho) deve ser mantida.
+        Na coluna LMI RCF-V pode escrever 30 mil, 50 mil, 70 mil, 100 mil ou o valor completo (ex: 70.000,00) — o sistema identifica automaticamente. Em branco, vale o LMI selecionado acima. Mantenha a primeira linha (cabeçalho).
       </p>
     </div>
   );

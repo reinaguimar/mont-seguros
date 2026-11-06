@@ -45,6 +45,20 @@ const parseBRL = (str) => {
   return parseFloat(str.replace(/[^\d,]/g, "").replace(",", ".")) || 0;
 };
 
+// LMI RCF-V: reconhece "30 mil", "30mil", "R$ 70.000,00", "70000", "100.000"
+const RCFV_LMIS_PADRAO = [30000, 50000, 70000, 100000];
+
+const parseRcfvLmi = (str) => {
+  if (str === undefined || str === null || String(str).trim() === "") return 0;
+  const texto = String(str).toLowerCase().replace(/r\$|\s|\./g, "").replace(",", ".");
+  const emMil = texto.match(/(\d+(?:\.\d+)?)mil/);
+  const numero = Math.round(parseFloat(emMil ? emMil[1] : texto) * (emMil ? 1000 : 1));
+  if (!numero || Number.isNaN(numero)) return 0;
+  // Se o valor estiver próximo de um LMI padrão, usa o padrão (ex: 30.000,00 -> 30000)
+  const padrao = RCFV_LMIS_PADRAO.find(l => Math.abs(l - numero) < 1);
+  return padrao || numero;
+};
+
 const parseDate = (str) => {
   if (!str) return "";
   const parts = String(str).trim().split("/");
@@ -188,7 +202,7 @@ const parseCSV = (text) => {
       data_movimento: parseDate((cols[5] || "").trim()),
       lmi_geral: parseBRL((cols[6] || "").trim()),
       premio_bruto: parseBRL((cols[7] || "").trim()),
-      rcfv_lmi: parseBRL((cols[8] || "").trim()),
+      rcfv_lmi: parseRcfvLmi(cols[8]),
     };
   }).filter(r => r.cpf_segurado);
 };
