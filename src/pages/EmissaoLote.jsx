@@ -23,11 +23,12 @@ const CONFIG = {
 const PRODUTOS_PADRAO = ["FR", "COL_PARCIAL", "COL_TOTAL", "INCENDIO", "RCFV"];
 const RCFV_LMI_PADRAO = 30000;
 
-const rcfvLmiEfetivo = (row, filial, rcfvLmiSelecionado) => {
-  if (row.rcfv_lmi && filial?.rcfv_lmis_permitidos?.length && filial.rcfv_lmis_permitidos.includes(row.rcfv_lmi)) {
-    return row.rcfv_lmi;
-  }
-  return rcfvLmiSelecionado;
+// LMI RCF-V: vazio, zero ou fora dos valores permitidos = apólice SEM cobertura de RCF-V
+const rcfvLmiEfetivo = (row, filial) => {
+  const lmi = Number(row.rcfv_lmi) || 0;
+  if (!lmi) return 0;
+  const permitidos = filial?.rcfv_lmis_permitidos?.length ? filial.rcfv_lmis_permitidos : RCFV_LMIS_PADRAO_LOTE;
+  return permitidos.includes(lmi) ? lmi : 0;
 };
 
 const COBERTURAS_FIXAS = [
@@ -46,7 +47,7 @@ const parseBRL = (str) => {
 };
 
 // LMI RCF-V: reconhece "30 mil", "30mil", "R$ 70.000,00", "70000", "100.000"
-const RCFV_LMIS_PADRAO = [30000, 50000, 70000, 100000];
+const RCFV_LMIS_PADRAO_LOTE = [30000, 50000, 70000, 100000];
 
 const parseRcfvLmi = (str) => {
   if (str === undefined || str === null || String(str).trim() === "") return 0;
@@ -55,7 +56,7 @@ const parseRcfvLmi = (str) => {
   const numero = Math.round(parseFloat(emMil ? emMil[1] : texto) * (emMil ? 1000 : 1));
   if (!numero || Number.isNaN(numero)) return 0;
   // Se o valor estiver próximo de um LMI padrão, usa o padrão (ex: 30.000,00 -> 30000)
-  const padrao = RCFV_LMIS_PADRAO.find(l => Math.abs(l - numero) < 1);
+  const padrao = RCFV_LMIS_PADRAO_LOTE.find(l => Math.abs(l - numero) < 1);
   return padrao || numero;
 };
 
@@ -410,12 +411,14 @@ export default function EmissaoLote() {
       filialId = filial.id;
     }
 
-    const rcfvLmiFinal = rcfvLmiEfetivo(row, filial, rcfvLmi);
-    const rcfvPrecoLote = (() => {
+    const rcfvLmiFinal = rcfvLmiEfetivo(row, filial);
+    // Sem LMI válido na planilha = apólice sem cobertura de RCF-V
+    const produtosLote = rcfvLmiFinal > 0 ? PRODUTOS_PADRAO : PRODUTOS_PADRAO.filter(p => p !== "RCFV");
+    const rcfvPrecoLote = rcfvLmiFinal > 0 ? (() => {
       const v = filial?.["rcfv_preco_" + rcfvLmiFinal];
       return (v === undefined || v === null || v === "") ? 35.90 : Number(v);
-    })();
-    const coberturas = calcularCoberturas(row.premio_bruto, row.lmi_geral, rcfvLmiFinal, rcfvPrecoLote);
+    })() : 0;
+    const coberturas = calcularCoberturas(row.premio_bruto, row.lmi_geral, rcfvLmiFinal, rcfvPrecoLote, produtosLote);
     const iof_total = Math.round(row.premio_bruto * CONFIG.aliquota_iof * 100) / 100;
     const corretagem = Math.round(row.premio_bruto * CONFIG.percentual_corretagem * 100) / 100;
 
@@ -435,8 +438,8 @@ export default function EmissaoLote() {
       data_movimento: row.data_movimento || row.data_inicio,
       lmi_geral: row.lmi_geral,
       premio_bruto_total: row.premio_bruto,
-      produtos: PRODUTOS_PADRAO,
-      rcfv_lmi: rcfvLmiFinal,
+      produtos: produtosLote,
+      rcfv_lmi: rcfvLmiFinal || undefined,
       id_objeto: row._placa_norm || row.placa,
       filial_id: filial.id,
       filial_codigo_susep: filial.codigo_susep,
@@ -602,9 +605,9 @@ export default function EmissaoLote() {
       {/* Produtos fixos */}
       <Card className="border-blue-100 bg-blue-50">
         <CardContent className="pt-4 pb-4">
-          <p className="text-sm font-semibold text-blue-800 mb-2">Produtos que serão contratados em todas as apólices:</p>
+          <p className="text-sm font-semibold text-blue-800 mb-2">Produtos contratados na emissão:</p>
           <div className="flex flex-wrap gap-2">
-            {["Furto e Roubo", "Colisão Parcial", "Colisão Total", "Incêndio e Fenômenos da Natureza", `RCF-V — LMI R$ ${rcfvLmiSelecionado.toLocaleString("pt-BR")}`].map(p => (
+            {["Furto e Roubo", "Colisão Parcial", "Colisão Total", "Incêndio e Fenômenos da Natureza", "RCF-V — LMI conforme planilha"].map(p => (
               <Badge key={p} className="bg-blue-600 text-white text-xs">{p}</Badge>
             ))}
           </div>
@@ -687,7 +690,7 @@ export default function EmissaoLote() {
             <p className="text-sm text-amber-900">
               <span className="font-semibold">Filial:</span> {filialSelecionada?.nome || "—"} — Código {filialSelecionada?.codigo_filial || "—"}
               <span className="mx-2 text-amber-300">•</span>
-              <span className="font-semibold">LMI RCF-V:</span> R$ {rcfvLmiSelecionado.toLocaleString("pt-BR")}
+              <span className="font-semibold">LMI RCF-V:</span> conforme planilha (30/50/70/100 mil) — vazio, zero ou valor não permitido = sem cobertura
             </p>
             <p className="text-xs text-amber-700 w-full">
               Todas as {total} apólices desta emissão serão registradas sob a filial selecionada. Esta ação não pode ser desfeita após a emissão.
@@ -766,12 +769,11 @@ export default function EmissaoLote() {
                         <td className="px-3 py-2">{row.lmi_geral.toLocaleString("pt-BR", { style: "currency", currency: "BRL" })}</td>
                         <td className="px-3 py-2">
                           {(() => {
-                            const lmiFinal = rcfvLmiEfetivo(row, filialSelecionada, rcfvLmiSelecionado);
-                            const fromCsv = row.rcfv_lmi && filialSelecionada?.rcfv_lmis_permitidos?.includes(row.rcfv_lmi);
+                            const lmiFinal = rcfvLmiEfetivo(row, filialSelecionada);
+                            if (!lmiFinal) return <span className="text-slate-400 italic">Sem cobertura</span>;
                             return (
-                              <span className={fromCsv ? "text-blue-700 font-semibold" : ""}>
+                              <span className="text-blue-700 font-semibold">
                                 {lmiFinal.toLocaleString("pt-BR", { style: "currency", currency: "BRL" })}
-                                {fromCsv && <span className="text-[10px] text-blue-500 ml-1">(CSV)</span>}
                               </span>
                             );
                           })()}

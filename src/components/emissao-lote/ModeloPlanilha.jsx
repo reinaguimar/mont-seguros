@@ -76,7 +76,7 @@ export default function ModeloPlanilha() {
       </div>
 
       <p className="mt-3 text-xs text-slate-500">
-        Na coluna LMI RCF-V pode escrever 30 mil, 50 mil, 70 mil, 100 mil ou o valor completo (ex: 70.000,00) — o sistema identifica automaticamente. Em branco, vale o LMI selecionado acima. Mantenha a primeira linha (cabeçalho).
+        Na coluna LMI RCF-V pode escrever 30 mil, 50 mil, 70 mil, 100 mil ou o valor completo (ex: 70.000,00) — o sistema identifica automaticamente. Em branco, zero ou valor não permitido para a filial, a apólice sai sem cobertura de RCF-V. Mantenha a primeira linha (cabeçalho).
       </p>
     </div>
   );

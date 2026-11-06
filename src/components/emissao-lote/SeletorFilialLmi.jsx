@@ -45,7 +45,7 @@ export default function SeletorFilialLmi({
                 ))}
               </div>
               <p className="text-xs text-amber-700 mt-1.5">
-                O LMI RCF-V será aplicado a todas as apólices. Se o CSV informar um LMI RCF-V na coluna 9 (após o prêmio bruto), ele será usado por linha quando permitido para a filial.
+                O LMI RCF-V de cada apólice vem da coluna 9 da planilha (após o prêmio bruto). Se vier vazio, zero ou um valor não permitido para a filial, a apólice será emitida sem cobertura de RCF-V.
               </p>
             </div>
           )}
