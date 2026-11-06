@@ -62,7 +62,7 @@
       "items": {
         "type": "number"
       },
-      "description": "Limites de RCF-V (LMI) que esta filial pode comercializar. Valores possiveis: 30000, 50000, 100000"
+      "description": "Limites de RCF-V (LMI) que esta filial pode comercializar. Valores possiveis: 30000, 50000, 70000, 100000"
     },
     "rcfv_preco_30000": {
       "type": "number",
@@ -73,6 +73,11 @@
       "type": "number",
       "default": 35.9,
       "description": "Premio fixo (R$) do RCF-V para o LMI de R$ 50.000, aplicado na emissao"
+    },
+    "rcfv_preco_70000": {
+      "type": "number",
+      "default": 35.9,
+      "description": "Premio fixo (R$) do RCF-V para o LMI de R$ 70.000, aplicado na emissao"
     },
     "rcfv_preco_100000": {
       "type": "number",

@@ -14,6 +14,7 @@ const PRODUTOS = [
 const RCFV_OPCOES = [
   { lmi: 30000, label: "R$ 30.000,00", premio: 35.90 },
   { lmi: 50000, label: "R$ 50.000,00", premio: 35.90 },
+  { lmi: 70000, label: "R$ 70.000,00", premio: 35.90 },
   { lmi: 100000, label: "R$ 100.000,00", premio: 35.90 },
 ];
 
@@ -43,7 +44,7 @@ export default function Step3Produtos({ formData, onInputChange, COBERTURAS_FIXA
         const filial = filiais[0];
         setProdutosPermitidos(filial?.produtos_permitidos || null);
         setRcfvLmisPermitidos(filial?.rcfv_lmis_permitidos || null);
-        setRcfvPrecos(filial ? { 30000: filial.rcfv_preco_30000, 50000: filial.rcfv_preco_50000, 100000: filial.rcfv_preco_100000 } : null);
+        setRcfvPrecos(filial ? { 30000: filial.rcfv_preco_30000, 50000: filial.rcfv_preco_50000, 70000: filial.rcfv_preco_70000, 100000: filial.rcfv_preco_100000 } : null);
       } catch {
         setProdutosPermitidos(null);
         setRcfvLmisPermitidos(null);

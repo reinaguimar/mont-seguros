@@ -38,11 +38,12 @@ const PRODUTOS_FILIAL = [
 const RCFV_LMIS = [
   { value: 30000, label: "RCF-V — R$ 30.000" },
   { value: 50000, label: "RCF-V — R$ 50.000" },
+  { value: 70000, label: "RCF-V — R$ 70.000" },
   { value: 100000, label: "RCF-V — R$ 100.000" },
 ];
 
 // Preco fixo (premio bruto) padrao do RCF-V por LMI. Fallback quando a filial ainda nao configurou.
-const RCFV_PRECOS_PADRAO = { 30000: 35.90, 50000: 35.90, 100000: 35.90 };
+const RCFV_PRECOS_PADRAO = { 30000: 35.90, 50000: 35.90, 70000: 35.90, 100000: 35.90 };
 
 const TODOS_PRODUTOS = ["FR", "RCFV", "COL_PARCIAL", "COL_TOTAL", "INCENDIO"];
 
@@ -56,7 +57,7 @@ const filialVazio = {
   ativo: true,
   tipo: "sub_representante",
   produtos_permitidos: [...TODOS_PRODUTOS],
-  rcfv_lmis_permitidos: [30000, 50000, 100000],
+  rcfv_lmis_permitidos: [30000, 50000, 70000, 100000],
   rcfv_precos: { ...RCFV_PRECOS_PADRAO },
   logo_url: "",
   cor_primaria: "",
@@ -120,10 +121,11 @@ export default function GestaoFiliais() {
         : [...TODOS_PRODUTOS],
       rcfv_lmis_permitidos: filial.rcfv_lmis_permitidos && filial.rcfv_lmis_permitidos.length > 0
         ? [...filial.rcfv_lmis_permitidos]
-        : [30000, 50000, 100000],
+        : [30000, 50000, 70000, 100000],
       rcfv_precos: {
         30000: filial.rcfv_preco_30000 ?? RCFV_PRECOS_PADRAO[30000],
         50000: filial.rcfv_preco_50000 ?? RCFV_PRECOS_PADRAO[50000],
+        70000: filial.rcfv_preco_70000 ?? RCFV_PRECOS_PADRAO[70000],
         100000: filial.rcfv_preco_100000 ?? RCFV_PRECOS_PADRAO[100000],
       },
       logo_url: filial.logo_url || "",
@@ -208,6 +210,7 @@ export default function GestaoFiliais() {
     };
     const rcfvPreco30000 = parsePreco(precosForm[30000] ?? precosForm["30000"]);
     const rcfvPreco50000 = parsePreco(precosForm[50000] ?? precosForm["50000"]);
+    const rcfvPreco70000 = parsePreco(precosForm[70000] ?? precosForm["70000"]);
     const rcfvPreco100000 = parsePreco(precosForm[100000] ?? precosForm["100000"]);
 
     setSalvando(true);
@@ -224,6 +227,7 @@ export default function GestaoFiliais() {
       rcfv_lmis_permitidos: lmisRcfv,
       rcfv_preco_30000: rcfvPreco30000,
       rcfv_preco_50000: rcfvPreco50000,
+      rcfv_preco_70000: rcfvPreco70000,
       rcfv_preco_100000: rcfvPreco100000,
       logo_url: form.logo_url || "",
       cor_primaria: form.cor_primaria || "",
