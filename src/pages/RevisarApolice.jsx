@@ -52,7 +52,8 @@ export default function RevisarApolice() {
           setFormData({
             produtos: data.produtos || [],
             lmi_geral: data.lmi_geral.toLocaleString('pt-BR', { minimumFractionDigits: 2 }).replace('.', ','),
-            premio_bruto: data.premio_bruto_total.toLocaleString('pt-BR', { minimumFractionDigits: 2 }).replace('.', ',')
+            premio_bruto: data.premio_bruto_total.toLocaleString('pt-BR', { minimumFractionDigits: 2 }).replace('.', ','),
+            rcfv_lmi: data.rcfv_lmi || 100000
           });
         })
         .catch(err => {
@@ -169,7 +170,8 @@ export default function RevisarApolice() {
     const newProdutos = [...formData.produtos].sort();
     return JSON.stringify(originalProdutos) !== JSON.stringify(newProdutos) ||
            parseCurrency(formData.lmi_geral) !== apoliceOriginal.lmi_geral ||
-           parseCurrency(formData.premio_bruto) !== apoliceOriginal.premio_bruto_total;
+           parseCurrency(formData.premio_bruto) !== apoliceOriginal.premio_bruto_total ||
+           (Number(formData.rcfv_lmi) || 100000) !== (Number(apoliceOriginal.rcfv_lmi) || 100000);
   };
 
   const handleSubmit = async () => {
@@ -217,8 +219,8 @@ export default function RevisarApolice() {
       const novoComercial = Math.round((novoPremioProporcional - novoIOF) * 100) / 100;
       const novaCorretagem = Math.round(novoPremioProporcional * CONFIG.percentual_corretagem * 100) / 100;
 
-      // Preço fixo do RCF-V configurado na filial (por LMI da apólice original)
-      const rcfvLmiApolice = apoliceOriginal.rcfv_lmi || 100000;
+      // LMI RCF-V escolhido na revisão (padrão: o da apólice original)
+      const rcfvLmiApolice = Number(formData.rcfv_lmi) || apoliceOriginal.rcfv_lmi || 100000;
       const filiaisRcfv = await base44.entities.Filial.filter({ id: apoliceOriginal.filial_id });
       const rcfvPrecoRaw = filiaisRcfv[0]?.["rcfv_preco_" + rcfvLmiApolice];
       const rcfvPreco = (rcfvPrecoRaw === undefined || rcfvPrecoRaw === null || rcfvPrecoRaw === "") ? 35.90 : Number(rcfvPrecoRaw);
@@ -450,7 +452,7 @@ export default function RevisarApolice() {
           </CardHeader>
           <CardContent className="p-6">
             <Step3Produtos 
-              formData={formData}
+              formData={{ ...formData, filial_id: apoliceOriginal.filial_id }}
               onInputChange={(field, value) => setFormData({...formData, [field]: value})}
               COBERTURAS_FIXAS={COBERTURAS_FIXAS}
             />
