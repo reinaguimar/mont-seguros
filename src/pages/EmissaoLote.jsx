@@ -10,6 +10,7 @@ import {
 } from "lucide-react";
 import ValidacaoEmissaoModal from "@/components/emissao-lote/ValidacaoEmissaoModal";
 import SeletorFilialLmi from "@/components/emissao-lote/SeletorFilialLmi";
+import ModeloPlanilha from "@/components/emissao-lote/ModeloPlanilha";
 import { calcularFimVigencia } from "@/lib/vigencia";
 
 // ─── Configurações fixas ────────────────────────────────────────────────────
@@ -609,6 +610,8 @@ export default function EmissaoLote() {
             <p className="text-xs text-slate-400 mt-1">Formato: filial;CPF segurado;CPF beneficiario;Placa;data inicio apolice;data do movimento;valor lmi;premio bruto;LMI RCF-V (opcional)</p>
             <input ref={fileRef} type="file" accept=".csv,.txt" className="hidden" onChange={handleFile} />
           </div>
+
+          <ModeloPlanilha />
 
           {carregandoApolices && (
             <div className="flex items-center gap-2 mt-3 text-sm text-blue-700">
