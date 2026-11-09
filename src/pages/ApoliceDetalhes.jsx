@@ -496,7 +496,7 @@ export default function ApoliceDetalhes() {
               <tbody>
                 {coberturas.map((cob, idx) => {
                   const nomeLC = cob.nome.toLowerCase();
-                  const semFranquia = nomeLC.includes('furto') || nomeLC.includes('roubo') || nomeLC.includes('rcf') || nomeLC.includes('responsabilidade civil');
+                  const semFranquia = nomeLC.includes('furto') || nomeLC.includes('roubo');
                   const franqVal = !semFranquia && franquiaPerc > 0 ? (cob.lmi * franquiaPerc / 100) : null;
                   return (
                     <tr key={idx}>
@@ -528,7 +528,7 @@ export default function ApoliceDetalhes() {
             <div className="cert-legal-body">
               <p>Este produto e oferecido no ambito do Sandbox Regulatorio da SUSEP, processo no 15414.627418/2021-15, que permite o desenvolvimento e oferta de solucoes inovadoras de seguros com determinadas flexibilizacoes regulamentares, sempre garantindo conformidade, protecao ao consumidor e estabilidade do setor.</p>
               <p><strong>Prazo de Vigencia:</strong> Este seguro tem prazo de vigencia de 30 dias, podendo ser renovado mediante nova contratacao.</p>
-              <p><strong>Franquia:</strong> As coberturas contratadas nao possuem franquia, salvo disposicao em contrario especificada nas condicoes gerais.</p>
+              <p><strong>Franquia:</strong> A franquia aplicavel a cada cobertura, quando houver, esta indicada na tabela de Coberturas Contratadas acima.</p>
               <p><strong>Importante:</strong> Este certificado comprova a contratacao do seguro e deve ser mantido em local seguro. Em caso de sinistro, entre em contato imediatamente com nossa central de atendimento. Para duvidas sobre coberturas, exclusoes e condicoes gerais, consulte a apolice completa disponivel em nosso site ou entre em contato conosco.</p>
               {filial?.telefone_sac && <p><strong>SAC:</strong> Telefone {filial.telefone_sac}{filial?.email_sac ? ` | E-mail: ${filial.email_sac}` : ''}</p>}
               <p><strong>Ouvidoria:</strong> Caso nao fique satisfeito com o atendimento, entre em contato com nossa ouvidoria atraves do telefone {filial?.telefone_ouvidoria || '0800 000 0000'} ou e-mail {filial?.email_ouvidoria || 'ouvidoria@gestaonew.com.br'}</p>
